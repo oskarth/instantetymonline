@@ -1,10 +1,7 @@
 (ns instantetymonline.core
   (:require [net.cgrand.enlive-html :as html]))
 
-(def ^:dynamic *base-url* "http://etymonline.com/index.php?l=e&p=9")
-
-;; this is letter e and page 10. There are ~1000 pages in total.
-;;(def http://etymonline.com/index.php?l=e&p=9
+;; There are ~1000 pages in total.
 
 ;; Basic algorithm:
 ;; For each letter
@@ -21,28 +18,46 @@
 
 ;; Want something like this but way more fuzzy
 ;; (get etyms "elitism (n.)")
+;; For now, let's just split by space (misses some like "Ellis Island")
+
+;; Persistence
+
+
+
+(defn gen-url [letter page]
+  (str "http://etymonline.com/index.php?l=" letter "&p=" page))
 
 (defn fetch-url [url]
   (html/html-resource (java.net.URL. url)))
 
-(defn etym-words []
-  (map html/text (html/select (fetch-url *base-url*) [:dt :a])))
+;; TODO: Add back verb/noun info.
+;; TODO: Keep "Ellis Island" (right now it's turned into "Ellis").
+(defn etym-words [hnodes]
+  (let [raw (map html/text (html/select hnodes [:dt :a]))
+        text (remove empty? raw)]
+    (map #(first (clojure.string/split % #" "))
+         text)))
 
-(defn etym-links []
-  (map html/text (html/select (fetch-url *base-url*) [:dd.highlight :a])))
+;; TODO: Use links with cross-references from here.
+(defn etym-links [hnodes]
+  (map html/text (html/select hnodes [:dd.highlight :a])))
 
-(defn etym-descriptions []
-  (map html/text (html/select (fetch-url *base-url*) [:dd])))
+(defn etym-descriptions [hnodes]
+  (map html/text (html/select hnodes [:dd])))
 
-#_(def words (remove empty? (etym-words)))
-;; Elihu,  -, Elijah, "", eliminate [these are all the titles]
+(defn etyms [hnodes]
+  (zipmap (etym-words hnodes)
+          (etym-descriptions hnodes)))
 
-#_(def links (etym-links))
-;; trickiest to match up, but can do with "see X" and cross ref, I think.
-;; don't think about this one for now
-;; ex- limit Elijah [all the linked words in description, I think]
+;; NOTE: Temporary - fetch hnodes once though
+#_(def e9 (fetch-url "e" "9")) ;; e9 is a seq of hnodes
 
-#_(def descriptions (etym-descriptions))
-;; masc. proper name, name of grat Old TE.. [all the descriptions]
+(def e9-map (etyms e9))
 
-(def etyms (zipmap words descriptions))
+;; Persistence
+;; (spit "data/e9" e9-map)
+;; (def e9a (read-string (slurp "data/e9")))
+
+;; To look up a word:
+;; (get e9a "else") ;; => description string
+;; (get e9a "nosuchword") ;; => nil
