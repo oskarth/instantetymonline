@@ -48,11 +48,11 @@
 (defn etyms [hnodes]
   (zipmap (etym-words hnodes)
           (etym-descriptions hnodes)))
-
+(comment
 ;; NOTE: Temporary - fetch hnodes once though
 #_(def e9 (fetch-url "e" "9")) ;; e9 is a seq of hnodes
 
-(def e9-map (etyms e9))
+;;(def e9-map (etyms e9))
 
 ;; Persistence
 ;; (spit "data/e9" e9-map)
@@ -61,3 +61,4 @@
 ;; To look up a word:
 ;; (get e9a "else") ;; => description string
 ;; (get e9a "nosuchword") ;; => nil
+)
