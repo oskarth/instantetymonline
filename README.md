@@ -5,9 +5,10 @@ http://etymonline.com/.
 
 ## TODO
 
+- Deploy to check network etc
+- Add copyright to footer
 - Nicer CSS
 - Autocomplete? (https://github.com/reagent-project/reagent-cookbook/blob/master/recipes/autocomplete/src/cljs/autocomplete/core.cljs)
-
 - Advanced compilation?
 
 ## Usage
