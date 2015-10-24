@@ -3,7 +3,12 @@
 I wanted to make the https://instantdomainsearch.com version of
 http://etymonline.com/.
 
-Step 1, parsing with Enlive. It's 1000 pages. Let's do a sample one.
+## TODO
+
+- Nicer CSS
+- Autocomplete? (https://github.com/reagent-project/reagent-cookbook/blob/master/recipes/autocomplete/src/cljs/autocomplete/core.cljs)
+
+- Advanced compilation?
 
 ## Usage
 
