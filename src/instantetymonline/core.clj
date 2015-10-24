@@ -89,6 +89,14 @@
   (dotimes [n (get letter-page-map letter)]
     (save-html! letter (str n))))
 
+(defonce words (atom {}))
+
+(defn html->etyms []
+  (doseq [char (keys letter-page-map)] ;; the alphabet
+    (dotimes [n (get letter-page-map char)]
+      (do (swap! words #(merge % (etyms (read-html char (str n)))))
+          (println "read into atom" char (str n))))))
+
 (comment
   ;; Ran this for all letters on October 24, 2015
   (persist-letter! "a")
@@ -96,12 +104,14 @@
   ;; To read it into mem, then save and merge with dict map
   (etyms (read-html "y" "1"))
 
-  ;;defonce? temp atom
-  ;;(def words (atom {}))
+  (html->etyms)
+
+  (spit "src/dict2.cljs" @words)
+
   
   ;; This is cheap so we can do this multiple times I think
   ;; Also we can just read all files from raw_html directory
-  (dotimes [n (get letter-page-map "y")]
-    (do (swap! words #(merge % (etyms (read-html "y" (str n)))))
-        (println "read into atom" "y" (str n))))
-)
+
+
+;;  (slurp (first (.listFiles (clojure.java.io/file "raw_html"))))
+  )
