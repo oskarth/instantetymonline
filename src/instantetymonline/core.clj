@@ -22,8 +22,6 @@
 
 ;; Persistence
 
-
-
 (defn gen-url [letter page]
   (str "http://etymonline.com/index.php?l=" letter "&p=" page))
 
@@ -48,17 +46,62 @@
 (defn etyms [hnodes]
   (zipmap (etym-words hnodes)
           (etym-descriptions hnodes)))
+
+;; Scraping
+
+(def letter-page-map
+  {"a" 60
+   "b" 53
+   "c" 84
+   "d" 46
+   "e" 38
+   "f" 42
+   "g" 35
+   "h" 41
+   "i" 38
+   "j" 10
+   "k" 9
+   "l" 31
+   "m" 56
+   "n" 20
+   "o" 22
+   "p" 81
+   "q" 6
+   "r" 46
+   "s" 108
+   "t" 46
+   "u" 24
+   "v" 15
+   "w" 22
+   "x" 1
+   "y" 4
+   "z" 3})
+
+(defn save-html! [letter page]
+  (let [content (fetch-url (gen-url letter page))]
+    (do (spit (str "raw_html/" letter page) (pr-str content))
+        (println "saved" letter page))))
+
+(defn read-html [letter page]
+  (read-string (slurp (str "raw_html/" letter page))))
+
+(defn persist-letter! [letter]
+  (dotimes [n (get letter-page-map letter)]
+    (save-html! letter (str n))))
+
 (comment
-;; NOTE: Temporary - fetch hnodes once though
-#_(def e9 (fetch-url "e" "9")) ;; e9 is a seq of hnodes
+  ;; Ran this for all letters on October 24, 2015
+  (persist-letter! "a")
+  
+  ;; To read it into mem, then save and merge with dict map
+  (etyms (read-html "y" "1"))
 
-;;(def e9-map (etyms e9))
-
-;; Persistence
-;; (spit "data/e9" e9-map)
-;; (def e9a (read-string (slurp "data/e9")))
-
-;; To look up a word:
-;; (get e9a "else") ;; => description string
-;; (get e9a "nosuchword") ;; => nil
+  ;;defonce? temp atom
+  ;;(def words (atom {}))
+  
+  ;; This is cheap so we can do this multiple times I think
+  ;; Also we can just read all files from raw_html directory
+  (dotimes [n (get letter-page-map "y")]
+    (do (swap! words #(merge % (etyms (read-html "y" (str n)))))
+        (println "read into atom" "y" (str n))))
 )
