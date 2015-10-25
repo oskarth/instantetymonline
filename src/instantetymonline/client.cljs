@@ -22,6 +22,11 @@
 (defn main-component []
   [:div.p1
    [:h1 "Etym Deli"]
+   [:p "Made as part of an "
+    [:a {:href "http://experiments.oskarth.com/etym/"} "experiment"]
+    ". All credit of the etymologies belongs to Douglas Harper and his "
+    [:a {:href "http://etymonline.com/"} "Online Etymology Dictionary" ] "."]
+   
    [etym-lookup]])
 
 (r/render-component [main-component]
