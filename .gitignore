@@ -10,6 +10,6 @@ pom.xml.asc
 .hgignore
 .hg/
 figwheel_server.log
-*/out/
+/out/
 /resources/public/js/out/
 /raw_html/
