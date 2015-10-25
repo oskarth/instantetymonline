@@ -3,6 +3,8 @@
 I wanted to make the https://instantdomainsearch.com version of
 http://etymonline.com/.
 
+~10mb minified for 40k words including definitions.
+
 ## TODO
 
 - Deploy to check network etc
