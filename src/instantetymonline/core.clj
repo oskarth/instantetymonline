@@ -1,27 +1,6 @@
 (ns instantetymonline.core
   (:require [net.cgrand.enlive-html :as html]))
 
-;; There are ~1000 pages in total.
-
-;; Basic algorithm:
-;; For each letter
-;; Go through all the pages
-;; Download the three (two?) things and put them into some structure
-;; Persist this
-
-;; Given words and descriptions, how do we want to represent things?
-;; We want O(1) access to words, so that's probably map with a key for now.
-;; {word1 description1, ...}
-;; Problem with this is that it's not straightforward how we do partial
-;; matching. Does that not require a trie or something? We could have both,
-;; though. Curious domain: how does such partial searches usually work?
-
-;; Want something like this but way more fuzzy
-;; (get etyms "elitism (n.)")
-;; For now, let's just split by space (misses some like "Ellis Island")
-
-;; Persistence
-
 (defn gen-url [letter page]
   (str "http://etymonline.com/index.php?l=" letter "&p=" page))
 
@@ -108,10 +87,4 @@
 
   (spit "src/dict2.cljs" @words)
 
-  
-  ;; This is cheap so we can do this multiple times I think
-  ;; Also we can just read all files from raw_html directory
-
-
-;;  (slurp (first (.listFiles (clojure.java.io/file "raw_html"))))
   )
