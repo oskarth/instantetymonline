@@ -16,7 +16,7 @@
             :value word
             :on-change (fn [e] (reset! local {:word (-> e .-target .-value)}))}]]
          [:br]
-         [:p {:style {"max-width" "35em"}} (get dict word)]]))))
+         [:p {:style {"max-width" "35em"}} (get dict (.toLowerCase word))]]))))
 
 
 (defn main-component []
