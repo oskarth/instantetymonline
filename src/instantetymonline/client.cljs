@@ -1,6 +1,6 @@
 (ns ^:figwheel-always instantetymonline.client
     (:require [reagent.core :as r]
-              [instantetymonline.dict :refer [dict]]))
+              [instantetymonline.autocomplete :refer [autocomplete]]))
 
 (enable-console-print!)
 
@@ -16,7 +16,8 @@
             :value word
             :on-change (fn [e] (reset! local {:word (-> e .-target .-value)}))}]]
          [:br]
-         [:p {:style {"max-width" "35em"}} (get dict (.toLowerCase word))]]))))
+         (for [[w def] (autocomplete word)]
+           [:p {:style {"max-width" "35em"}} [:b w] " " def])]))))
 
 
 (defn main-component []
@@ -26,7 +27,6 @@
     [:a {:href "http://experiments.oskarth.com/etym/"} "experiment"]
     ". All credit of the etymologies belongs to Douglas Harper and his "
     [:a {:href "http://etymonline.com/"} "Online Etymology Dictionary" ] "."]
-   
    [etym-lookup]])
 
 (r/render-component [main-component]

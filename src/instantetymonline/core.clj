@@ -78,8 +78,8 @@
 
 (comment
   ;; Ran this for all letters on October 24, 2015
-  (persist-letter! "a")
-  
+  ;;(persist-letter! "a")
+
   ;; To read it into mem, then save and merge with dict map
   (etyms (read-html "y" "1"))
 
