@@ -7,14 +7,10 @@
 (defn fetch-url [url]
   (html/html-resource (java.net.URL. url)))
 
-;; TODO: Add back verb/noun info.
-;; TODO: Keep "Ellis Island" (right now it's turned into "Ellis").
 (defn etym-words [hnodes]
   (let [raw (map html/text (html/select hnodes [:dt :a]))
         text (remove empty? raw)]
-    text
-    #_(map #(first (clojure.string/split % #" "))
-         text)))
+    text))
 
 ;; TODO: Use links with cross-references from here.
 (defn etym-links [hnodes]
