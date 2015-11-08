@@ -7,6 +7,9 @@
                  [org.clojure/clojurescript "1.7.122"]
                  [enlive "1.1.6"]
                  [ring/ring-core "1.4.0"]
+                 [http-kit "2.1.19"]
+                 [compojure "1.4.0"]
+                 [com.taoensso/sente "1.6.0"]
                  [reagent "0.5.1"]]
   :plugins      [[lein-figwheel "0.4.1"]]
   :cljsbuild {

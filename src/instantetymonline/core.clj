@@ -1,5 +1,9 @@
 (ns instantetymonline.core
-  (:require [net.cgrand.enlive-html :as html]))
+  (:require [net.cgrand.enlive-html :as html]
+            [org.httpkit.server :refer [run-server]]
+            [compojure.core :refer [GET POST defroutes]]
+            [compojure.route :as route]
+            [ring.util.response :refer [resource-response]]))
 
 (defn gen-url [letter page]
   (str "http://etymonline.com/index.php?l=" letter "&p=" page))
@@ -72,6 +76,24 @@
     (dotimes [n (get letter-page-map char)]
       (do (swap! words #(merge % (etyms (read-html char (str n)))))
           (println "read into atom" char (str n))))))
+
+;; Routes and handlers
+(defroutes app
+  (GET "/" req (resource-response "index.html" {:root "public"}))
+  (route/resources "/"))
+
+;; Server
+(defonce server (atom nil))
+
+(defn stop-server []
+  (when-not (nil? @server)
+    (@server :timeout 100)
+    (reset! server nil)))
+
+(defn start! []
+  (reset! server (run-server #'app {:port 8080})))
+
+;; (start!)
 
 (comment
   ;; Ran this for all letters on October 24, 2015
