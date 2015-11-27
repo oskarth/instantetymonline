@@ -7,6 +7,7 @@
                  [org.clojure/clojurescript "1.7.122"]
                  [enlive "1.1.6"]
                  [ring/ring-core "1.4.0"]
+                 [org.clojure/core.async "0.2.371"]
                  [http-kit "2.1.19"]
                  [compojure "1.4.0"]
                  [com.taoensso/sente "1.6.0"]

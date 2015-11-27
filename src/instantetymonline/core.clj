@@ -1,9 +1,15 @@
 (ns instantetymonline.core
   (:require [net.cgrand.enlive-html :as html]
             [org.httpkit.server :refer [run-server]]
+            [clojure.core.async :as async :refer [<! go close!]]
             [compojure.core :refer [GET POST defroutes]]
             [compojure.route :as route]
-            [ring.util.response :refer [resource-response]]))
+            [ring.util.response :refer [resource-response]]
+            [ring.middleware.keyword-params]
+            [ring.middleware.params]
+            [taoensso.sente :as sente]
+            [taoensso.sente.server-adapters.http-kit
+             :refer [sente-web-server-adapter]]))
 
 (defn gen-url [letter page]
   (str "http://etymonline.com/index.php?l=" letter "&p=" page))
@@ -77,10 +83,26 @@
       (do (swap! words #(merge % (etyms (read-html char (str n)))))
           (println "read into atom" char (str n))))))
 
+;; Websocket stuff
+(let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn
+              connected-uids]}
+      (sente/make-channel-socket! sente-web-server-adapter {})]
+  (def ring-ajax-post                ajax-post-fn)
+  (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
+  (def ch-chsk                       ch-recv)
+  (def chsk-send!                    send-fn)
+  (def connected-uids                connected-uids))
+
 ;; Routes and handlers
-(defroutes app
+(defroutes app-routes
   (GET "/" req (resource-response "index.html" {:root "public"}))
+  (GET  "/chsk" req (ring-ajax-get-or-ws-handshake req))
+  (POST "/chsk" req (ring-ajax-post                req))
   (route/resources "/"))
+
+(def app (-> app-routes
+             ring.middleware.keyword-params/wrap-keyword-params
+             ring.middleware.params/wrap-params))
 
 ;; Server
 (defonce server (atom nil))
@@ -93,7 +115,54 @@
 (defn start! []
   (reset! server (run-server #'app {:port 8080})))
 
-;; (start!)
+;; XXX: Still can't get the shutdown hook thing to work.
+;; Componentize it?
+
+(defn handle-events []
+  (go (while true
+        (let [val (<! ch-chsk)]
+          (get-and-send! (:event val))))))
+
+;; we get a message, then we want to broadcast it to client. How?
+;; How broadcast in general?
+(defn get-and-send! [[_ text]]
+  (do
+    (println "RECV2" text)
+    (doseq [uid (:any @connected-uids)]
+      (chsk-send! uid
+                  [:output/text {:autocomplete "hi there"
+                                 :uid uid}]))))
+
+;; nil-uid
+;;(:any @connected-uids)
+
+;; for each uid, how know what it is? in event?
+;; (chsk-send! foo )
+;; ok so it updated? goodie, well only one of em
+
+;; when we get this, then what?
+;; [:input/text hello there]
+
+;; now I can't close it! Problem.
+
+(comment
+  (start!)
+
+  (def ch (atom nil))
+  (reset! ch (handle-events))
+
+  (close! @ch)
+  )
+
+
+;;; (handle-events)
+
+;; (handle-events)
+
+;; XXX: Trying to close go event handler.
+; (close! @ch)
+;; https://stackoverflow.com/questions/20485188/gracefully-exit-a-clojure-core-async-go-loop-on-kill
+
 
 (comment
   ;; Ran this for all letters on October 24, 2015

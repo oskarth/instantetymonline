@@ -12,6 +12,14 @@ See http://experiments.oskarth.com/etym for more.
 `./scripts/release`
 `./scripts/deploy`
 
+## Development
+
+Hook in and run `(start!)` and `(handle-events!)` in a Clojure REPL. Separately, start a shell and run `lein figwheel` for Clojurescript browser repl.
+
+Go to http://localhost:3449/ to connect to the Clojurescript REPL.
+
+Gotcha: Something something auto-loading. If you do the above and run `(chsk-send! [:some/text "foo"])` in Figwheel it works.
+
 ## TODO
 
 - Fuzzy substring matching?
