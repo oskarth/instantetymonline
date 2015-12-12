@@ -2,4 +2,8 @@
 
 cp resources/public/index-release.html release/index.html
 cp resources/public/js/main.js release/js/main.js
-scp -r release/* freebsd@kasparov:etym/
+mkdir release/resources
+cp resources/dict.dat release/resources/dict.dat
+cp target/instantetymonline-0.1.0-SNAPSHOT-standalone.jar release/instanteymonline.jar
+
+rsync -r release/* freebsd@kasparov:etym/

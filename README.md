@@ -28,6 +28,16 @@ Gotcha: Something something auto-loading. If you do the above and run `(chsk-sen
 
 ## License
 
+Actual etymologies:
+
+;; © 2001-2015 Douglas Harper
+;; http://etymonline.com
+;;
+;; Note that this dictionary is a worse version (downsampled) of the
+;; official etymonline dictionary. It thus contains mistakes and
+;; omissions as a result of that process.
+
+
 Copyright © 2015 FIXME
 
 Distributed under the Eclipse Public License either version 1.0 or (at

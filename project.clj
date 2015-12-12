@@ -13,6 +13,8 @@
                  [com.taoensso/sente "1.6.0"]
                  [reagent "0.5.1"]]
   :plugins      [[lein-figwheel "0.4.1"]]
+  :main instantetymonline.core
+  :aot [instantetymonline.core]
   :cljsbuild {
     :builds [{:id "dev"
               :source-paths ["src/"]

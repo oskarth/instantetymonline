@@ -1,5 +1,6 @@
 (ns instantetymonline.core
-  (:require [net.cgrand.enlive-html :as html]
+  (:require [instantetymonline.autocomplete :refer [autocomplete]]
+            [net.cgrand.enlive-html :as html]
             [org.httpkit.server :refer [run-server]]
             [clojure.core.async :as async :refer [<! go close!]]
             [compojure.core :refer [GET POST defroutes]]
@@ -9,7 +10,8 @@
             [ring.middleware.params]
             [taoensso.sente :as sente]
             [taoensso.sente.server-adapters.http-kit
-             :refer [sente-web-server-adapter]]))
+             :refer [sente-web-server-adapter]])
+  (:gen-class))
 
 (defn gen-url [letter page]
   (str "http://etymonline.com/index.php?l=" letter "&p=" page))
@@ -118,23 +120,20 @@
 ;; XXX: Still can't get the shutdown hook thing to work.
 ;; Componentize it?
 
+(defn get-and-send! [[_ text]]
+  (do
+    (println "RECV" text)
+    (doseq [uid (:any @connected-uids)]
+      (chsk-send! uid
+                  [:output/text {:autocomplete (autocomplete text)
+                                 :uid uid}]))))
+
 (defn handle-events []
   (go (while true
         (let [val (<! ch-chsk)]
           (get-and-send! (:event val))))))
 
-;; we get a message, then we want to broadcast it to client. How?
-;; How broadcast in general?
-(defn get-and-send! [[_ text]]
-  (do
-    (println "RECV2" text)
-    (doseq [uid (:any @connected-uids)]
-      (chsk-send! uid
-                  [:output/text {:autocomplete "hi there"
-                                 :uid uid}]))))
 
-;; nil-uid
-;;(:any @connected-uids)
 
 ;; for each uid, how know what it is? in event?
 ;; (chsk-send! foo )
@@ -145,10 +144,18 @@
 
 ;; now I can't close it! Problem.
 
+
+(def ch (atom nil))
+
+(defn -main [& args]
+  (do (println "Starting server...")
+      (start!)
+      (reset! ch (handle-events))
+      ))
+
 (comment
   (start!)
 
-  (def ch (atom nil))
   (reset! ch (handle-events))
 
   (close! @ch)
