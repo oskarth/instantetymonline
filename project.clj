@@ -12,7 +12,7 @@
                  [compojure "1.4.0"]
                  [com.taoensso/sente "1.6.0"]
                  [reagent "0.5.1"]]
-  :plugins      [[lein-figwheel "0.4.1"]]
+  :plugins      [[lein-figwheel "0.5.0-3"]]
   :main instantetymonline.core
   :aot [instantetymonline.core]
   :cljsbuild {
